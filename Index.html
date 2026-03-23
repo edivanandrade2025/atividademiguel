@@ -1,0 +1,483 @@
+
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Nunito:wght@700;800;900&family=Nunito+Sans:wght@400;600&display=swap');
+*{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:'Nunito Sans',sans-serif;}
+#app{min-height:500px;}
+.screen{display:none;padding:1.5rem 1rem;}
+.screen.active{display:block;}
+
+.hero{text-align:center;padding:2rem 1rem 1.5rem;background:#C0392B;border-radius:16px;color:white;margin-bottom:1.5rem;}
+.hero h1{font-family:'Nunito',sans-serif;font-size:1.8rem;font-weight:900;line-height:1.2;}
+.hero p{font-size:1rem;opacity:.85;margin-top:.4rem;}
+.badge{display:inline-block;background:rgba(255,255,255,.2);border-radius:50px;padding:6px 16px;font-size:.9rem;font-weight:600;margin-top:.7rem;}
+
+.cover-card{background:var(--color-background-primary);border:0.5px solid var(--color-border-tertiary);border-radius:16px;padding:1.5rem;margin-bottom:1.25rem;}
+.cover-card h2{font-family:'Nunito',sans-serif;font-size:1.1rem;font-weight:800;color:#C0392B;margin-bottom:1.2rem;text-align:center;}
+.field-group{margin-bottom:1rem;}
+.field-group label{display:block;font-size:.8rem;font-weight:600;color:var(--color-text-secondary);margin-bottom:4px;text-transform:uppercase;letter-spacing:.06em;}
+.field-group input{width:100%;padding:.65rem .85rem;border:1px solid var(--color-border-secondary);border-radius:10px;font-family:'Nunito Sans',sans-serif;font-size:.95rem;color:var(--color-text-primary);background:var(--color-background-primary);}
+.field-group input:focus{outline:none;border-color:#6B2FA0;box-shadow:0 0 0 3px rgba(107,47,160,.15);}
+.field-row{display:grid;grid-template-columns:1fr 1fr;gap:.75rem;}
+
+.start-btn{display:block;width:100%;padding:1rem;font-family:'Nunito',sans-serif;font-size:1.1rem;font-weight:900;background:#46D160;color:#1a5e2a;border:none;border-radius:12px;cursor:pointer;transition:transform .15s;box-shadow:0 4px 0 #2d9140;}
+.start-btn:hover{transform:translateY(-2px);}
+.start-btn:disabled{background:#ccc;color:#888;box-shadow:none;cursor:not-allowed;transform:none;}
+
+.q-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:1rem;}
+.q-counter{font-family:'Nunito',sans-serif;font-weight:800;font-size:.9rem;color:var(--color-text-secondary);}
+.progress-bar{height:6px;background:var(--color-border-tertiary);border-radius:99px;margin-bottom:1.25rem;overflow:hidden;}
+.progress-fill{height:100%;background:#C0392B;border-radius:99px;transition:width .4s ease;}
+.score-badge{font-family:'Nunito',sans-serif;font-weight:800;font-size:.9rem;color:#C0392B;background:#FDECEA;padding:4px 12px;border-radius:99px;}
+
+.question-card{background:var(--color-background-primary);border:0.5px solid var(--color-border-tertiary);border-radius:16px;padding:1.5rem;margin-bottom:1.25rem;}
+.q-category{font-size:.8rem;font-weight:600;text-transform:uppercase;letter-spacing:.08em;color:#C0392B;background:#FDECEA;padding:4px 12px;border-radius:99px;display:inline-block;margin-bottom:.8rem;}
+.question-text{font-size:1.2rem;font-weight:700;line-height:1.6;color:var(--color-text-primary);}
+
+.options-grid{display:grid;grid-template-columns:1fr 1fr;gap:.6rem;margin-bottom:1rem;}
+.option-btn{padding:1rem .9rem;border:none;border-radius:12px;cursor:pointer;font-family:'Nunito',sans-serif;font-size:1rem;font-weight:700;color:white;text-align:left;transition:transform .12s;display:flex;align-items:flex-start;gap:8px;line-height:1.5;}
+.option-btn:hover:not(:disabled){transform:scale(1.02);}
+.option-btn:active:not(:disabled){transform:scale(.98);}
+.option-btn:disabled{cursor:default;}
+.opt-a{background:#E21B3C;box-shadow:0 3px 0 #9c1228;}
+.opt-b{background:#1368CE;box-shadow:0 3px 0 #0d4a99;}
+.opt-c{background:#D89E00;box-shadow:0 3px 0 #9e7300;}
+.opt-d{background:#26890C;box-shadow:0 3px 0 #1a5c08;}
+.opt-letter{display:inline-flex;align-items:center;justify-content:center;width:22px;height:22px;min-width:22px;background:rgba(255,255,255,.25);border-radius:6px;font-size:.8rem;font-weight:900;}
+.option-btn.correct{opacity:1;box-shadow:0 0 0 3px #46D160;}
+.option-btn.wrong{opacity:.4;}
+
+.feedback{padding:.75rem 1rem;border-radius:12px;font-weight:600;font-size:.9rem;margin-bottom:.75rem;display:none;}
+.feedback.show{display:block;}
+.feedback.right{background:#d4f8dc;color:#1a5e2a;}
+.feedback.wrong-fb{background:#fde8ec;color:#8b1a2b;}
+.answer-text{font-size:.8rem;margin-top:.4rem;font-weight:400;opacity:.85;}
+
+.next-btn{display:none;width:100%;padding:.85rem;font-family:'Nunito',sans-serif;font-size:1rem;font-weight:900;background:#C0392B;color:white;border:none;border-radius:12px;cursor:pointer;}
+.next-btn.show{display:block;}
+.next-btn:hover{background:#a93226;}
+
+.results-header{text-align:center;background:#C0392B;border-radius:16px;padding:1.5rem 1rem;color:white;margin-bottom:1rem;}
+.results-header h2{font-family:'Nunito',sans-serif;font-size:1.4rem;font-weight:900;}
+.student-info-display{font-size:.85rem;opacity:.8;margin-top:.4rem;}
+.big-score{font-family:'Nunito',sans-serif;font-size:3rem;font-weight:900;line-height:1;margin:.5rem 0;}
+.big-score span{font-size:1rem;opacity:.7;}
+.nota-final{font-size:1.5rem;font-weight:900;background:rgba(255,255,255,.2);border-radius:12px;padding:.5rem 1.5rem;display:inline-block;margin-top:.5rem;}
+.nota-label{font-size:.75rem;opacity:.7;display:block;margin-bottom:2px;}
+
+.breakdown{background:var(--color-background-primary);border:0.5px solid var(--color-border-tertiary);border-radius:12px;padding:1rem;margin-bottom:1rem;}
+.breakdown h3{font-size:.8rem;font-weight:600;color:var(--color-text-secondary);margin-bottom:.75rem;text-transform:uppercase;letter-spacing:.06em;}
+.stat-row{display:flex;justify-content:space-between;align-items:center;padding:.4rem 0;border-bottom:0.5px solid var(--color-border-tertiary);font-size:.9rem;}
+.stat-row:last-child{border-bottom:none;}
+.stat-val{font-family:'Nunito',sans-serif;font-weight:800;}
+.stat-val.green{color:#26890C;}
+.stat-val.red{color:#E21B3C;}
+.stat-val.purple{color:#C0392B;}
+
+.action-btn{display:block;width:100%;padding:.9rem;font-family:'Nunito',sans-serif;font-size:1rem;font-weight:900;border:none;border-radius:12px;cursor:pointer;margin-bottom:.75rem;transition:transform .15s;}
+.action-btn:hover{transform:translateY(-1px);}
+.btn-print{background:#1368CE;color:white;box-shadow:0 4px 0 #0d4a99;}
+.btn-restart{background:#46D160;color:#1a5e2a;box-shadow:0 4px 0 #2d9140;}
+
+.review-section{margin-bottom:1rem;}
+.review-item{background:var(--color-background-primary);border:0.5px solid var(--color-border-tertiary);border-radius:12px;padding:.9rem;margin-bottom:.6rem;}
+.review-item.r-correct{border-left:4px solid #46D160;}
+.review-item.r-wrong{border-left:4px solid #E21B3C;}
+.review-q{font-size:.85rem;font-weight:600;color:var(--color-text-primary);margin-bottom:.5rem;}
+.review-q-num{font-size:.72rem;background:#FDECEA;color:#C0392B;padding:2px 8px;border-radius:99px;margin-right:6px;font-weight:700;}
+.review-answers{display:flex;flex-direction:column;gap:4px;font-size:.8rem;}
+.r-your-ans{color:#E21B3C;font-weight:600;}
+.r-correct-ans{color:#26890C;font-weight:600;}
+.r-ok{color:#26890C;font-weight:600;}
+
+@media(max-width:480px){.options-grid{grid-template-columns:1fr;}.hero h1{font-size:1.3rem;}.field-row{grid-template-columns:1fr;}}
+
+@media print{
+  *{-webkit-print-color-adjust:exact!important;print-color-adjust:exact!important;}
+  .no-print{display:none!important;}
+  body{background:white!important;font-family:'Arial',sans-serif;font-size:12px;}
+  #app{padding:0;}
+  .screen{display:block!important;padding:0;}
+  #cover-screen,#quiz-screen,#results-screen{display:none!important;}
+  #print-view{display:block!important;}
+
+  /* ── CABEÇALHO DA PÁGINA ── */
+  .print-page-header{display:flex;align-items:center;justify-content:space-between;padding:14px 30px;background:#C0392B;color:white;margin-bottom:0;}
+  .print-page-header .ph-title{font-size:15px;font-weight:900;letter-spacing:.5px;text-transform:uppercase;}
+  .print-page-header .ph-sub{font-size:10px;opacity:.85;margin-top:2px;letter-spacing:1px;}
+  .print-page-header .ph-badge{background:rgba(255,255,255,.2);padding:6px 14px;font-size:11px;font-weight:700;border:1px solid rgba(255,255,255,.4);}
+
+  /* ── FAIXA DE IDENTIFICAÇÃO ── */
+  .print-id-bar{background:#f7f7f7;border:1px solid #ddd;border-top:none;padding:14px 30px;display:grid;grid-template-columns:2fr 1fr 1fr;gap:0;margin-bottom:16px;}
+  .print-id-cell{padding:6px 14px;border-right:1px solid #ddd;}
+  .print-id-cell:first-child{padding-left:0;}
+  .print-id-cell:last-child{border-right:none;}
+  .print-id-label{font-size:9px;font-weight:700;color:#C0392B;text-transform:uppercase;letter-spacing:.8px;margin-bottom:3px;}
+  .print-id-value{font-size:13px;font-weight:700;color:#111;}
+
+  /* ── PAINEL DE RESULTADO ── */
+  .print-result-panel{display:grid;grid-template-columns:200px 1fr;gap:0;border:1.5px solid #C0392B;margin:0 0 20px;}
+  .print-result-left{background:#C0392B;color:white;padding:22px 18px;text-align:center;display:flex;flex-direction:column;justify-content:center;align-items:center;}
+  .print-result-left .rl-label{font-size:9px;font-weight:700;letter-spacing:1.2px;text-transform:uppercase;opacity:.85;margin-bottom:6px;}
+  .print-result-left .rl-nota{font-size:46px;font-weight:900;line-height:1;}
+  .print-result-left .rl-max{font-size:11px;opacity:.75;margin-top:4px;}
+  .print-result-left .rl-status{margin-top:10px;background:rgba(255,255,255,.2);padding:4px 14px;font-size:11px;font-weight:700;border:1px solid rgba(255,255,255,.4);}
+  .print-result-right{padding:16px 20px;background:#fff;}
+  .print-result-right .rr-title{font-size:9px;font-weight:700;color:#C0392B;text-transform:uppercase;letter-spacing:.8px;border-bottom:1px solid #eee;padding-bottom:6px;margin-bottom:10px;}
+  .print-stat-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;}
+  .print-stat-item{background:#f9f9f9;border:1px solid #eee;border-left:3px solid #C0392B;padding:7px 10px;}
+  .print-stat-item .si-label{font-size:9px;color:#777;text-transform:uppercase;letter-spacing:.5px;}
+  .print-stat-item .si-value{font-size:15px;font-weight:900;color:#111;margin-top:1px;}
+
+  /* ── GABARITO ── */
+  .print-section-title{font-size:11px;font-weight:700;color:#C0392B;text-transform:uppercase;letter-spacing:.8px;border-bottom:2px solid #C0392B;padding-bottom:5px;margin:20px 0 12px;}
+  .print-q{margin-bottom:10px;font-size:11.5px;line-height:1.55;border:1px solid #eee;border-left:4px solid #ddd;padding:10px 12px;page-break-inside:avoid;}
+  .print-q.q-ok{border-left-color:#26890C;}
+  .print-q.q-err{border-left-color:#C0392B;}
+  .print-q-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:5px;}
+  .print-q-num{font-weight:700;color:#555;font-size:10px;}
+  .print-q-cat{font-size:9px;background:#f0f0f0;color:#555;padding:2px 8px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;}
+  .print-status{display:inline-block;padding:2px 9px;font-size:10px;font-weight:700;}
+  .print-status.ok{background:#d4f8dc;color:#1a5e2a;}
+  .print-status.err{background:#fde8ec;color:#8b1a2b;}
+  .print-q-text{font-weight:600;color:#111;margin-bottom:6px;font-size:12px;}
+  .print-ans{font-size:11px;color:#444;padding:5px 8px;background:#fafafa;border-top:1px solid #eee;}
+  .print-exp{font-size:10.5px;color:#666;margin-top:4px;font-style:italic;}
+
+  @page{margin:14mm 16mm;}
+}
+</style>
+
+<div id="app">
+
+<div id="cover-screen" class="screen active">
+  <div class="hero">
+    <h1>Atividade Sistemas Operacional</h1>
+    <p>Windows &middot; Excel &middot; Word</p>
+    <div class="badge">20 quest&otilde;es &middot; cada quest&atilde;o vale 5,0 pts</div>
+  </div>
+  <div class="cover-card">
+    <h2>Identificação do Aluno</h2>
+    <div class="field-group">
+      <label>Nome completo</label>
+      <input type="text" id="student-name" placeholder="Digite seu nome completo" oninput="checkCover()"/>
+    </div>
+    <div class="field-row">
+      <div class="field-group">
+        <label>Turma</label>
+        <input type="text" id="student-turma" placeholder="Ex: 1ºA" oninput="checkCover()"/>
+      </div>
+      <div class="field-group">
+        <label>Data</label>
+        <input type="date" id="student-date" oninput="checkCover()"/>
+      </div>
+    </div>
+  </div>
+  <button class="start-btn" id="start-btn" onclick="startQuiz()" disabled>Preencha os dados para iniciar</button>
+</div>
+
+<div id="quiz-screen" class="screen">
+  <div class="q-header">
+    <span class="q-counter" id="q-counter">Questão 1 de 20</span>
+    <span class="score-badge" id="score-display">0,00 pts</span>
+  </div>
+  <div class="progress-bar"><div class="progress-fill" id="progress-fill" style="width:5%"></div></div>
+  <div class="question-card">
+    <div class="q-category" id="q-category">Windows</div>
+    <div class="question-text" id="question-text"></div>
+  </div>
+  <div class="options-grid" id="options-grid"></div>
+  <div class="feedback" id="feedback"><div id="feedback-text"></div><div class="answer-text" id="answer-text"></div></div>
+  <button class="next-btn" id="next-btn" onclick="nextQuestion()">Próxima →</button>
+</div>
+
+<div id="results-screen" class="screen">
+  <div class="results-header">
+    <h2>Atividade concluída!</h2>
+    <div class="student-info-display" id="result-student-info"></div>
+    <div class="big-score"><span id="final-score">0</span><span>/20</span></div>
+    <div>
+      <span class="nota-label">Nota Final (0 – 10,0)</span>
+      <div class="nota-final" id="nota-final">0,00</div>
+    </div>
+  </div>
+  <div class="breakdown">
+    <h3>Resultado por categoria</h3>
+    <div class="stat-row"><span>Windows / CMD</span><span class="stat-val" id="stat-win">-</span></div>
+    <div class="stat-row"><span>Excel</span><span class="stat-val" id="stat-excel">-</span></div>
+    <div class="stat-row"><span>Word / Gestão</span><span class="stat-val" id="stat-word">-</span></div>
+    <div class="stat-row"><span>Acertos</span><span class="stat-val green" id="stat-total">-</span></div>
+    <div class="stat-row"><span>Erros</span><span class="stat-val red" id="stat-wrong">-</span></div>
+    <div class="stat-row"><span>Pontuação obtida</span><span class="stat-val purple" id="stat-pts">-</span></div>
+  </div>
+  <div class="review-section" id="review-section"></div>
+  <button class="action-btn btn-print no-print" onclick="printResult()">Imprimir / Salvar PDF</button>
+</div>
+
+<div id="print-view" style="display:none;"></div>
+
+</div>
+
+<script>
+const questions=[
+  {cat:"Windows",q:"O que caracteriza um caminho 'absoluto' no Windows?",opts:["O nome do arquivo apenas","O endereço completo desde a raiz (ex: C:\\Users...)","Um atalho na área de trabalho","Uma pasta oculta no sistema"],ans:1,exp:"O caminho absoluto é o endereço completo desde a raiz do sistema, como C:\\Users\\Documentos\\arquivo.txt."},
+  {cat:"Windows",q:"Qual é o limite máximo de caracteres para o caminho completo de um arquivo no navegador Windows?",opts:["128 caracteres","512 caracteres","256 caracteres","Ilimitado"],ans:2,exp:"O limite máximo é de 256 caracteres, incluindo unidade, pastas e nome do arquivo."},
+  {cat:"Windows CMD",q:"No Prompt de Comando (CMD), qual código é usado para criar um novo diretório?",opts:["NEW","CD","MKDIR ou MD","DIR"],ans:2,exp:"Utiliza-se o comando MKDIR ou sua forma abreviada MD para criar um novo diretório."},
+  {cat:"Windows",q:"Qual é a função do Gerenciador de Tarefas (Task Manager) no Windows?",opts:["Agendar tarefas automáticas do sistema","Monitorar processos, desempenho e encerrar programas travados","Gerenciar arquivos e pastas do usuário","Configurar a resolução da tela"],ans:1,exp:"O Gerenciador de Tarefas permite visualizar e encerrar processos em execução, monitorar o uso de CPU, memória e disco, sendo acessado pelo atalho Ctrl + Shift + Esc."},
+  {cat:"Windows",q:"Qual é o atalho/comando que abre o Editor de Registro do Windows?",opts:["msconfig","regedit","devmgmt.msc","sfc /scannow"],ans:1,exp:"O comando 'regedit' digitado no menu Executar (Win + R) abre o Editor de Registro do Windows, onde é possível visualizar e editar as configurações armazenadas no registro do sistema."},
+  {cat:"Word / Gestão",q:"Segundo o Manual de Boas Práticas, qual caractere é preferível para separar palavras em links?",opts:["Underscore (sublinhado)","Espaço em branco","Hífen (-)","Ponto final"],ans:2,exp:"O hífen (-) é preferível ao underscore em links, pois os mecanismos de busca o tratam como separador de palavras."},
+  {cat:"Excel",q:"No Excel, qual o símbolo usado para 'fixar' ou 'travar' uma célula em uma fórmula?",opts:["%","&","$ (Cifrão)","#"],ans:2,exp:"O cifrão ($) trava a referência da célula, impedindo que ela mude ao arrastar a fórmula para outras células."},
+  {cat:"Excel",q:"Se você tem a Quantidade em B5 e o Preço em C5, qual a fórmula para o 'Total Pago'?",opts:["=B5+C5","=SOMA(B5;C5)","=B5*C5","=B5/C5"],ans:2,exp:"Utiliza-se o operador de multiplicação: =B5*C5 para calcular o total (quantidade × preço)."},
+  {cat:"Windows CMD",q:"No CMD, qual comando limpa todo o conteúdo visível da tela?",opts:["CLEAR","CLS","EXIT","DELETE"],ans:1,exp:"O comando CLS (Clear Screen) limpa todo o conteúdo visível no terminal do Prompt de Comando."},
+  {cat:"Excel",q:"Qual o atalho de teclado para o 'Preenchimento Relâmpago' no Excel?",opts:["Ctrl + C","Ctrl + V","Ctrl + E","Ctrl + Z"],ans:2,exp:"O atalho Ctrl + E ativa o Preenchimento Relâmpago, que identifica padrões de digitação e os replica automaticamente."},
+  {cat:"Windows CMD",q:"Qual comando do CMD é usado para listar os conteúdos de diretórios?",opts:["CLS","TREE","DIR","LIST"],ans:2,exp:"O comando DIR lista todos os arquivos e pastas do diretório atual, exibindo nome, tamanho e data de modificação. É um dos comandos mais utilizados no Prompt de Comando do Windows."},
+  {cat:"Excel",q:"Para que serve a fórmula SE(F2>=7; \"APROVADO\"; \"REPROVADO\")?",opts:["Calcular a média","Exibir resultado com base em uma condição lógica","Somar todas as notas","Criar um gráfico automático"],ans:1,exp:"A função SE avalia uma condição lógica e retorna um valor diferente dependendo se ela for verdadeira ou falsa."},
+  {cat:"Windows CMD",q:"Para criar uma pasta com espaços no nome via CMD (ex: Janeiro 2025), você deve:",opts:["Digitar md Janeiro 2025","Colocar o nome entre aspas: md \"Janeiro 2025\"","Usar o comando NEW FOLDER","O CMD não aceita nomes com espaços"],ans:1,exp:"O nome com espaços deve estar entre aspas para o sistema não interpretar cada palavra como comando separado."},
+  {cat:"Word / Gestão",q:"Como e-mails devem ser salvos nas pastas de trabalho segundo o Manual de Boas Práticas?",opts:["Como arquivos do Word (.doc)","Como arquivos de texto (.txt)","No formato PDF","Devem permanecer apenas no Outlook"],ans:2,exp:"O Manual recomenda salvar e-mails importantes no formato PDF dentro das pastas de trabalho do projeto."},
+  {cat:"Word / Gestão",q:"Qual é a extensão de arquivo padrão para documentos modernos do Word?",opts:[".doc",".docx",".xls",".pdf"],ans:1,exp:"O formato .docx é o padrão atual dos documentos do Microsoft Word, substituindo o antigo formato .doc."},
+  {cat:"Windows CMD",q:"No CMD, qual comando exibe a versão exata do Windows instalada?",opts:["WIN","VER","SYSTEM","CMD"],ans:1,exp:"O comando VER exibe a versão exata do sistema operacional Windows instalada na máquina."},
+  {cat:"Excel",q:"No Excel, qual caractere é usado para unir (concatenar) textos e células?",opts:["+","#","& (E comercial)","@"],ans:2,exp:"O caractere & (E comercial) é usado para concatenar (unir) textos e referências de células no Excel."},
+  {cat:"Windows CMD",q:"Qual comando do CMD realiza a função de 'recortar' e também pode renomear pastas?",opts:["COPY","MOVE","REN","DEL"],ans:1,exp:"O comando MOVE serve tanto para mover arquivos (equivalente a recortar) quanto para renomear pastas."},
+  {cat:"Word / Gestão",q:"Por que não se deve confiar na data do Windows para controle de versão de arquivos?",opts:["O relógio do Windows sempre erra","A data muda ao abrir/salvar, sem necessariamente haver revisão real","O Windows apaga datas após um ano","As datas são criptografadas"],ans:1,exp:"A data é atualizada simplesmente ao abrir e salvar, podendo não representar uma revisão real do conteúdo."},
+  {cat:"Windows CMD",q:"No CMD, o caractere curinga '*' (asterisco) serve para:",opts:["Multiplicar números","Substituir um grupo de caracteres em buscas e comandos","Deletar o sistema operacional","Abrir o menu de ajuda"],ans:1,exp:"O asterisco (*) é um curinga que substitui qualquer sequência de caracteres em comandos como COPY *.txt D:\\Backup."}
+];
+
+let current=0,score=0,answered=false;
+let catScores={"Windows":[0,0],"Windows CMD":[0,0],"Excel":[0,0],"Word / Gestão":[0,0]};
+let userAnswers=[];
+let studentName='',studentTurma='',studentDate='';
+
+function checkCover(){
+  const n=document.getElementById('student-name').value.trim();
+  const t=document.getElementById('student-turma').value.trim();
+  const d=document.getElementById('student-date').value;
+  const btn=document.getElementById('start-btn');
+  if(n&&t&&d){btn.disabled=false;btn.textContent='Iniciar Atividade';}
+  else{btn.disabled=true;btn.textContent='Preencha os dados para iniciar';}
+}
+
+function startQuiz(){
+  studentName=document.getElementById('student-name').value.trim();
+  studentTurma=document.getElementById('student-turma').value.trim();
+  studentDate=document.getElementById('student-date').value;
+  current=0;score=0;userAnswers=[];
+  catScores={"Windows":[0,0],"Windows CMD":[0,0],"Excel":[0,0],"Word / Gestão":[0,0]};
+  shuffle(questions);
+  showScreen('quiz-screen');
+  renderQuestion();
+}
+
+function showScreen(id){
+  document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+}
+
+function renderQuestion(){
+  answered=false;
+  const q=questions[current];
+  document.getElementById('q-counter').textContent=`Questão ${current+1} de ${questions.length}`;
+  document.getElementById('score-display').textContent=`${(score*5).toFixed(0)} pts`;
+  document.getElementById('progress-fill').style.width=`${((current+1)/questions.length)*100}%`;
+  document.getElementById('q-category').textContent=q.cat;
+  document.getElementById('question-text').textContent=q.q;
+  const letters=['A','B','C','D'];
+  const colors=['opt-a','opt-b','opt-c','opt-d'];
+  const grid=document.getElementById('options-grid');
+  grid.innerHTML='';
+  q.opts.forEach((opt,i)=>{
+    const btn=document.createElement('button');
+    btn.className=`option-btn ${colors[i]}`;
+    btn.innerHTML=`<span class="opt-letter">${letters[i]}</span><span>${opt}</span>`;
+    btn.onclick=()=>selectAnswer(i);
+    grid.appendChild(btn);
+  });
+  const fb=document.getElementById('feedback');
+  fb.classList.remove('show','right','wrong-fb');
+  document.getElementById('next-btn').classList.remove('show');
+}
+
+function selectAnswer(idx){
+  if(answered)return;
+  answered=true;
+  const q=questions[current];
+  const buttons=document.querySelectorAll('.option-btn');
+  const isRight=idx===q.ans;
+  catScores[q.cat][1]++;
+  if(isRight){score++;catScores[q.cat][0]++;}
+  userAnswers.push({q:q.q,cat:q.cat,opts:q.opts,yourAns:idx,correct:q.ans,ok:isRight,exp:q.exp});
+  buttons.forEach((btn,i)=>{
+    btn.disabled=true;
+    if(i===q.ans)btn.classList.add('correct');
+    else if(i===idx&&!isRight)btn.classList.add('wrong');
+  });
+  const fb=document.getElementById('feedback');
+  fb.classList.add('show');
+  if(isRight){fb.classList.add('right');document.getElementById('feedback-text').textContent='Correto!';}
+  else{fb.classList.add('wrong-fb');document.getElementById('feedback-text').textContent='Resposta incorreta';}
+  document.getElementById('answer-text').textContent=q.exp;
+  const nb=document.getElementById('next-btn');
+  nb.classList.add('show');
+  nb.textContent=current<questions.length-1?'Próxima →':'Ver resultado →';
+}
+
+function nextQuestion(){
+  current++;
+  if(current>=questions.length){showResults();return;}
+  renderQuestion();
+}
+
+function fmtDate(d){
+  if(!d)return '';
+  const [y,m,day]=d.split('-');
+  return `${day}/${m}/${y}`;
+}
+
+function showResults(){
+  showScreen('results-screen');
+  const nota=(score*5);
+  document.getElementById('final-score').textContent=score;
+  document.getElementById('nota-final').textContent=nota;
+  document.getElementById('result-student-info').textContent=`${studentName} | Turma: ${studentTurma} | ${fmtDate(studentDate)}`;
+  const winT=(catScores["Windows"][0]+catScores["Windows CMD"][0]);
+  const winM=(catScores["Windows"][1]+catScores["Windows CMD"][1]);
+  const exT=catScores["Excel"][0],exM=catScores["Excel"][1];
+  const wdT=catScores["Word / Gestão"][0],wdM=catScores["Word / Gestão"][1];
+  const setS=(id,v,m)=>{const el=document.getElementById(id);el.textContent=`${v}/${m}`;el.className='stat-val '+(v/m>=0.5?'green':'red');};
+  setS('stat-win',winT,winM);setS('stat-excel',exT,exM);setS('stat-word',wdT,wdM);
+  document.getElementById('stat-total').textContent=`${score} acertos`;
+  document.getElementById('stat-wrong').textContent=`${questions.length-score} erros`;
+  document.getElementById('stat-pts').textContent=`${nota} / 100`;
+
+  const rev=document.getElementById('review-section');
+  let html='<div class="breakdown"><h3>Gabarito detalhado</h3>';
+  userAnswers.forEach((a,i)=>{
+    const letters=['A','B','C','D'];
+    html+=`<div class="review-item ${a.ok?'r-correct':'r-wrong'}">
+      <div class="review-q"><span class="review-q-num">Q${i+1}</span>${a.q}</div>
+      <div class="review-answers">`;
+    if(a.ok){
+      html+=`<span class="r-ok">Sua resposta: ${letters[a.yourAns]}) ${a.opts[a.yourAns]} — Correto!</span>`;
+    } else {
+      html+=`<span class="r-your-ans">Sua resposta: ${letters[a.yourAns]}) ${a.opts[a.yourAns]}</span>
+             <span class="r-correct-ans">Resposta correta: ${letters[a.correct]}) ${a.opts[a.correct]}</span>`;
+    }
+    html+=`<span style="font-size:.78rem;color:var(--color-text-secondary);margin-top:2px;">${a.exp}</span>
+      </div></div>`;
+  });
+  html+='</div>';
+  rev.innerHTML=html;
+}
+
+function shuffle(arr){for(let i=arr.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[arr[i],arr[j]]=[arr[j],arr[i]];}return arr;}
+
+function printResult(){
+  const nota=(score*5);
+  const letters=['A','B','C','D'];
+  const acertos=score, erros=questions.length-score;
+  const pct=Math.round((score/questions.length)*100);
+  const status=nota>=50?'APROVADO':'RECUPERAÇÃO';
+  const statusColor=nota>=50?'#1a5e2a':'#8b1a2b';
+
+  const winT=(catScores["Windows"][0]+catScores["Windows CMD"][0]);
+  const winM=(catScores["Windows"][1]+catScores["Windows CMD"][1]);
+  const exT=catScores["Excel"][0],exM=catScores["Excel"][1];
+  const wdT=catScores["Word / Gestão"][0],wdM=catScores["Word / Gestão"][1];
+
+  let questoes='';
+  userAnswers.forEach((a,i)=>{
+    const sc=a.ok?'ok':'err';
+    const st=a.ok?'✔ CORRETO':'✘ ERRADO';
+    const pts=a.ok?'5 pts':'0 pts';
+    let ans='';
+    if(a.ok){
+      ans=`<span style="color:#1a5e2a;font-weight:600;">✔ ${letters[a.yourAns]}) ${a.opts[a.yourAns]}</span>`;
+    } else {
+      ans=`<span style="color:#8b1a2b;font-weight:600;">✘ Sua resposta: ${letters[a.yourAns]}) ${a.opts[a.yourAns]}</span>&nbsp;&nbsp;
+           <span style="color:#1a5e2a;font-weight:600;">✔ Correta: ${letters[a.correct]}) ${a.opts[a.correct]}</span>`;
+    }
+    questoes+=`<div class="print-q ${a.ok?'q-ok':'q-err'}">
+      <div class="print-q-header">
+        <span><span class="print-q-num">QUESTÃO ${i+1}</span> &nbsp;<span class="print-q-cat">${a.cat}</span></span>
+        <span style="display:flex;align-items:center;gap:8px;"><span class="print-status ${sc}">${st}</span><span style="font-size:10px;font-weight:700;color:${a.ok?'#1a5e2a':'#8b1a2b'};">${pts}</span></span>
+      </div>
+      <div class="print-q-text">${a.q}</div>
+      <div class="print-ans">${ans}<div class="print-exp">💡 ${a.exp}</div></div>
+    </div>`;
+  });
+
+  document.getElementById('print-view').innerHTML=`
+    <div class="print-page-header">
+      <div>
+        <div class="ph-title">Atividade — Sistemas Operacional</div>
+        <div class="ph-sub">WINDOWS &middot; EXCEL &middot; WORD</div>
+      </div>
+      <div class="ph-badge">20 QUESTÕES &nbsp;|&nbsp; 5 PTS CADA &nbsp;|&nbsp; TOTAL: 100 PTS</div>
+    </div>
+
+    <div class="print-id-bar">
+      <div class="print-id-cell">
+        <div class="print-id-label">Nome do Aluno</div>
+        <div class="print-id-value">${studentName}</div>
+      </div>
+      <div class="print-id-cell">
+        <div class="print-id-label">Turma</div>
+        <div class="print-id-value">${studentTurma}</div>
+      </div>
+      <div class="print-id-cell">
+        <div class="print-id-label">Data de Realização</div>
+        <div class="print-id-value">${fmtDate(studentDate)}</div>
+      </div>
+    </div>
+
+    <div class="print-result-panel">
+      <div class="print-result-left">
+        <div class="rl-label">Pontuação Final</div>
+        <div class="rl-nota">${nota}</div>
+        <div class="rl-max">de 100 pontos</div>
+        <div class="rl-status" style="background:${nota>=50?'rgba(70,209,96,.35)':'rgba(255,255,255,.15)'};">${status}</div>
+      </div>
+      <div class="print-result-right">
+        <div class="rr-title">Desempenho por Categoria</div>
+        <div class="print-stat-grid">
+          <div class="print-stat-item">
+            <div class="si-label">✔ Acertos</div>
+            <div class="si-value" style="color:#26890C;">${acertos} / 20</div>
+          </div>
+          <div class="print-stat-item">
+            <div class="si-label">✘ Erros</div>
+            <div class="si-value" style="color:#C0392B;">${erros} / 20</div>
+          </div>
+          <div class="print-stat-item">
+            <div class="si-label">Windows / CMD</div>
+            <div class="si-value">${winT} / ${winM}</div>
+          </div>
+          <div class="print-stat-item">
+            <div class="si-label">Excel</div>
+            <div class="si-value">${exT} / ${exM}</div>
+          </div>
+          <div class="print-stat-item">
+            <div class="si-label">Word / Gestão</div>
+            <div class="si-value">${wdT} / ${wdM}</div>
+          </div>
+          <div class="print-stat-item">
+            <div class="si-label">Aproveitamento</div>
+            <div class="si-value">${pct}%</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="print-section-title">Gabarito Detalhado — Todas as Questões</div>
+    ${questoes}`;
+  window.print();
+}
+
+function restartQuiz(){
+  document.getElementById('student-name').value='';
+  document.getElementById('student-turma').value='';
+  document.getElementById('student-date').value='';
+  document.getElementById('start-btn').disabled=true;
+  document.getElementById('start-btn').textContent='Preencha os dados para iniciar';
+  showScreen('cover-screen');
+}
+</script>
